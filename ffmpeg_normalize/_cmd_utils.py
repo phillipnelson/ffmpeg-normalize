@@ -66,16 +66,23 @@ class CommandRunner():
             universal_newlines=False
         )
 
-        # for stderr_line in iter(p.stderr):
         while True:
-            line = p.stderr.readline().decode("utf8", errors='replace')
-            if line == '' and p.poll() is not None:
-                break
+            line = ""
+            while True:
+                if line == '' and p.poll() is not None:
+                    break
+                b = p.stderr.read(1)
+                line += b.decode("utf-8")
+                if any(line.endswith(delim) for delim in ["\n", "\r"]):
+                    break
             stderr.append(line.strip())
             self.output = "\n".join(stderr)
+            if line == '' and p.poll() is not None:
+                break
 
-            if not total_dur and CommandRunner.DUR_REGEX.search(line):
-                total_dur = CommandRunner.DUR_REGEX.search(line).groupdict()
+            total_dur_result = CommandRunner.DUR_REGEX.search(line)
+            if not total_dur and total_dur_result:
+                total_dur = total_dur_result.groupdict()
                 total_dur = to_ms(**total_dur)
                 continue
             if total_dur:
