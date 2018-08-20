@@ -19,13 +19,6 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 with open(path.join(here, 'HISTORY.md'), encoding='utf-8') as f:
     history = f.read()
 
-try:
-    import pypandoc
-    long_description = pypandoc.convert_text(long_description, 'rst', format='md')
-    history = pypandoc.convert_text(history, 'rst', format='md')
-except ImportError:
-    print("pypandoc module not found, could not convert Markdown to RST")
-
 setup(
     name='ffmpeg-normalize',
     version=version,
